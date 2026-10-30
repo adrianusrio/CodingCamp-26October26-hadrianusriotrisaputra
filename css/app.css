@@ -1,0 +1,1387 @@
+/* =============================================================
+   css/app.css — Expense & Budget Visualizer
+   Task 10.1 : Base layout & components  (mobile-first)
+   Task 10.2 : Responsive breakpoints & dark/light theme  (extends this file)
+   ============================================================= */
+
+/* =============================================================
+   1. CSS CUSTOM PROPERTIES (design tokens)
+   ============================================================= */
+:root {
+  /* Brand / action */
+  --color-primary:        #3b82f6;   /* blue-500  */
+  --color-primary-hover:  #2563eb;   /* blue-600  */
+  --color-primary-text:   #ffffff;
+
+  /* Semantic transaction colours */
+  --color-income:         #22c55e;   /* green-500 */
+  --color-income-bg:      #f0fdf4;   /* green-50  */
+  --color-expense:        #ef4444;   /* red-500   */
+  --color-expense-bg:     #fef2f2;   /* red-50    */
+
+  /* Balance indicator colours */
+  --color-balance-pos:    #16a34a;   /* green-600 */
+  --color-balance-neg:    #dc2626;   /* red-600   */
+
+  /* Surface / background */
+  --color-background:     #f9fafb;   /* gray-50   */
+  --color-surface:        #ffffff;
+  --color-surface-alt:    #f3f4f6;   /* gray-100  */
+
+  /* Text */
+  --color-text:           #1f2937;   /* gray-800  */
+  --color-text-muted:     #6b7280;   /* gray-500  */
+  --color-text-subtle:    #9ca3af;   /* gray-400  */
+
+  /* Borders / dividers */
+  --color-border:         #e5e7eb;   /* gray-200  */
+  --color-border-focus:   #3b82f6;   /* blue-500  */
+
+  /* Warning / danger */
+  --color-danger:         #c0392b;
+  --color-danger-text:    #ffffff;
+
+  /* Chart bar palette (up to 14 categories) */
+  --chart-color-1:  #3b82f6;
+  --chart-color-2:  #22c55e;
+  --chart-color-3:  #f59e0b;
+  --chart-color-4:  #ef4444;
+  --chart-color-5:  #a855f7;
+  --chart-color-6:  #06b6d4;
+  --chart-color-7:  #f97316;
+  --chart-color-8:  #84cc16;
+  --chart-color-9:  #ec4899;
+  --chart-color-10: #14b8a6;
+  --chart-color-11: #8b5cf6;
+  --chart-color-12: #d97706;
+  --chart-color-13: #64748b;
+  --chart-color-14: #6b7280;
+
+  /* Spacing scale */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Typography */
+  --font-family:   'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+  --font-size-xs:   12px;
+  --font-size-sm:   14px;
+  --font-size-base: 16px;
+  --font-size-lg:   18px;
+  --font-size-xl:   20px;
+  --font-size-2xl:  24px;
+  --font-size-3xl:  30px;
+
+  /* Radii */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0,0,0,.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+
+  /* Nav */
+  --nav-height-mobile:  56px;
+  --nav-height-desktop: 64px;
+}
+
+/* =============================================================
+   2. RESET & BASE
+   ============================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--font-size-base);
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  line-height: 1.5;
+  /* Reserve space at the bottom for the mobile bottom-nav */
+  padding-bottom: calc(var(--nav-height-mobile) + var(--space-4));
+  min-height: 100vh;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+ul, ol {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* =============================================================
+   3. ACCESSIBILITY HELPERS
+   ============================================================= */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Interactive elements: minimum 44×44 px touch target (Req 9.2) */
+button,
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+label[for],
+.nav-tab {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* =============================================================
+   4. LAYOUT — APP SHELL
+   ============================================================= */
+
+/* Main container — constrains content width */
+.app-container {
+  width: 100%;
+  max-width: 480px;        /* mobile-first max; extended by media queries */
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+/* =============================================================
+   5. NAVIGATION — BOTTOM TAB (mobile) / HEADER (desktop)
+   ============================================================= */
+
+/*
+ * #nav-bar  — fixed bottom navigation on mobile.
+ * Task 10.2 repositions it to the top as a header on desktop.
+ */
+#nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height-mobile);
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -2px 8px rgba(0,0,0,.06);
+  display: flex;
+  align-items: stretch;
+  z-index: 100;
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-1);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  transition: color .15s ease;
+  cursor: pointer;
+  /* Ensure 44px touch target */
+  min-height: var(--nav-height-mobile);
+}
+
+.nav-tab:hover {
+  color: var(--color-primary);
+}
+
+.nav-tab.active {
+  color: var(--color-primary);
+}
+
+.nav-tab .nav-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Active indicator bar under the tab icon */
+.nav-tab.active::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  position: absolute;
+  bottom: 0;
+}
+
+/* Theme toggle button — positioned in the header area */
+#theme-toggle {
+  position: fixed;
+  top: var(--space-3);
+  right: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+  z-index: 110;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  transition: background-color .15s ease, border-color .15s ease;
+}
+
+#theme-toggle:hover {
+  background-color: var(--color-surface-alt);
+}
+
+/* =============================================================
+   6. SECTIONS — SHOW / HIDE
+   ============================================================= */
+
+/* All app sections */
+#section-dashboard,
+#section-history,
+#section-chart,
+#section-monthly,
+#section-categories {
+  display: none;
+  padding-top: calc(var(--nav-height-mobile) + var(--space-4));
+  /* Reserve space at top for theme toggle button */
+  padding-top: calc(44px + var(--space-6));
+  padding-bottom: var(--space-6);
+  animation: fadeIn .2s ease;
+}
+
+/* Active section is visible */
+#section-dashboard.active,
+#section-history.active,
+#section-chart.active,
+#section-monthly.active,
+#section-categories.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Section heading */
+.section-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-5);
+}
+
+/* =============================================================
+   7. CARDS — SHARED CARD COMPONENT
+   ============================================================= */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+/* =============================================================
+   8. DASHBOARD — BALANCE CARD, SUMMARY CARDS, FORM
+   ============================================================= */
+
+/* --- Balance card --- */
+.balance-card {
+  background-color: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  text-align: center;
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-md);
+  color: var(--color-primary-text);
+}
+
+.balance-card .balance-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  opacity: .85;
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.balance-card .balance-amount {
+  font-size: var(--font-size-3xl);
+  font-weight: 800;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+}
+
+/* Positive balance — green tint */
+.balance-amount.balance-positive {
+  color: #bbf7d0;  /* green-200 on primary background */
+}
+
+/* Negative balance — red warning (Req 2.4) */
+.balance-amount.balance-negative {
+  color: #fca5a5;  /* red-300 on primary background */
+}
+
+/* When displayed outside the blue card (e.g. standalone element) */
+.balance-value.balance-positive {
+  color: var(--color-balance-pos);
+}
+
+.balance-value.balance-negative {
+  color: var(--color-balance-neg);
+}
+
+/* --- Summary cards row (income + expense) --- */
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.summary-card {
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-card.income-card {
+  background-color: var(--color-income-bg);
+  border: 1px solid #bbf7d0;
+}
+
+.summary-card.expense-card {
+  background-color: var(--color-expense-bg);
+  border: 1px solid #fecaca;
+}
+
+.summary-card .summary-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: var(--space-2);
+}
+
+.summary-card.income-card  .summary-label { color: var(--color-income);  }
+.summary-card.expense-card .summary-label { color: var(--color-expense); }
+
+.summary-card .summary-amount {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.summary-card.income-card  .summary-amount { color: var(--color-income);  }
+.summary-card.expense-card .summary-amount { color: var(--color-expense); }
+
+/* =============================================================
+   9. FORM — ADD TRANSACTION
+   ============================================================= */
+.form-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-4);
+}
+
+.form-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.form-group {
+  margin-bottom: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.form-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: var(--space-3) var(--space-3);
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  transition: border-color .15s ease, box-shadow .15s ease;
+  min-height: 44px;    /* Req 9.2 touch target */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+  outline: none;
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236b7280'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  background-size: 16px;
+  padding-right: var(--space-8);
+}
+
+/* Transaction type toggle (radio buttons styled as buttons) */
+.type-toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.type-toggle-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+  min-height: 44px;
+  user-select: none;
+}
+
+.type-toggle-label:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* Hide the actual radio input */
+.type-toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.type-toggle-input[value="income"]:checked + .type-toggle-label {
+  background-color: var(--color-income-bg);
+  border-color: var(--color-income);
+  color: var(--color-income);
+}
+
+.type-toggle-input[value="expense"]:checked + .type-toggle-label {
+  background-color: var(--color-expense-bg);
+  border-color: var(--color-expense);
+  color: var(--color-expense);
+}
+
+/* Form error message */
+.form-error {
+  font-size: var(--font-size-xs);
+  color: var(--color-expense);
+  margin-top: var(--space-1);
+  min-height: 16px;  /* keeps layout stable */
+}
+
+.form-error:empty {
+  display: none;
+}
+
+/* Submit button */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .1s ease, box-shadow .15s ease;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  width: 100%;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:active {
+  transform: scale(.98);
+}
+
+.btn-danger {
+  background-color: transparent;
+  color: var(--color-expense);
+  border: 1.5px solid var(--color-expense);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: var(--radius-md);
+}
+
+.btn-danger:hover {
+  background-color: var(--color-expense-bg);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface-alt);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-border);
+}
+
+/* =============================================================
+   10. TRANSACTION LIST — HISTORY SECTION  (Req 3.4)
+   ============================================================= */
+#section-history .section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+/* The scrollable list wrapper */
+.transaction-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Single transaction item */
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .15s ease;
+}
+
+.transaction-item:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Coloured left accent bar */
+.transaction-item::before {
+  content: '';
+  display: block;
+  width: 4px;
+  min-height: 40px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+/* Req 3.4 — green for income, red for expense */
+.transaction-item.income::before {
+  background-color: var(--color-income);
+}
+
+.transaction-item.expense::before {
+  background-color: var(--color-expense);
+}
+
+/* Transaction body — takes remaining space */
+.transaction-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.transaction-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.transaction-amount {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.transaction-item.income  .transaction-amount { color: var(--color-income);  }
+.transaction-item.expense .transaction-amount { color: var(--color-expense); }
+
+.transaction-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.transaction-category {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+}
+
+.transaction-type-badge {
+  display: inline-block;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.transaction-item.income  .transaction-type-badge {
+  background-color: var(--color-income-bg);
+  color: var(--color-income);
+}
+
+.transaction-item.expense .transaction-type-badge {
+  background-color: var(--color-expense-bg);
+  color: var(--color-expense);
+}
+
+.transaction-date {
+  color: var(--color-text-subtle);
+}
+
+.transaction-description {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Delete button aligned to the right */
+.transaction-delete {
+  flex-shrink: 0;
+}
+
+/* =============================================================
+   11. EMPTY STATE  (Req 3.2, 6.5)
+   ============================================================= */
+.empty-state {
+  text-align: center;
+  padding: var(--space-10) var(--space-4);
+  color: var(--color-text-muted);
+}
+
+.empty-state .empty-icon {
+  font-size: 48px;
+  margin-bottom: var(--space-3);
+  opacity: .5;
+}
+
+.empty-state .empty-text {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+}
+
+.empty-state .empty-subtext {
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-2);
+  color: var(--color-text-subtle);
+}
+
+/* =============================================================
+   12. CHART SECTION — CSS BAR CHART  (Req 4.1, 4.4, 4.5)
+   ============================================================= */
+.chart-container {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-4);
+}
+
+.chart-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-5);
+}
+
+/* Each category row in the bar chart */
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.chart-bar-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+  font-weight: 500;
+  flex-shrink: 0;
+  width: 110px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Track — the full-width background rail */
+.chart-bar-track {
+  flex: 1;
+  height: 20px;
+  background-color: var(--color-surface-alt);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+/*
+ * .chart-bar — the filled portion.
+ * `width` is set inline by JS as a percentage string (e.g. style="width:35.5%").
+ * Colour index is set via a data attribute: data-color-index="1"
+ */
+.chart-bar {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+  min-width: 4px;   /* always visible even for tiny values */
+}
+
+/* Assign bar colours by data attribute (1–14) */
+.chart-bar[data-color-index="1"]  { background-color: var(--chart-color-1);  }
+.chart-bar[data-color-index="2"]  { background-color: var(--chart-color-2);  }
+.chart-bar[data-color-index="3"]  { background-color: var(--chart-color-3);  }
+.chart-bar[data-color-index="4"]  { background-color: var(--chart-color-4);  }
+.chart-bar[data-color-index="5"]  { background-color: var(--chart-color-5);  }
+.chart-bar[data-color-index="6"]  { background-color: var(--chart-color-6);  }
+.chart-bar[data-color-index="7"]  { background-color: var(--chart-color-7);  }
+.chart-bar[data-color-index="8"]  { background-color: var(--chart-color-8);  }
+.chart-bar[data-color-index="9"]  { background-color: var(--chart-color-9);  }
+.chart-bar[data-color-index="10"] { background-color: var(--chart-color-10); }
+.chart-bar[data-color-index="11"] { background-color: var(--chart-color-11); }
+.chart-bar[data-color-index="12"] { background-color: var(--chart-color-12); }
+.chart-bar[data-color-index="13"] { background-color: var(--chart-color-13); }
+.chart-bar[data-color-index="14"] { background-color: var(--chart-color-14); }
+
+.chart-bar-value {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  width: 40px;
+  text-align: right;
+}
+
+/* Legend (Req 4.4) */
+.chart-legend {
+  margin-top: var(--space-5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+}
+
+.chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.chart-legend-dot[data-color-index="1"]  { background-color: var(--chart-color-1);  }
+.chart-legend-dot[data-color-index="2"]  { background-color: var(--chart-color-2);  }
+.chart-legend-dot[data-color-index="3"]  { background-color: var(--chart-color-3);  }
+.chart-legend-dot[data-color-index="4"]  { background-color: var(--chart-color-4);  }
+.chart-legend-dot[data-color-index="5"]  { background-color: var(--chart-color-5);  }
+.chart-legend-dot[data-color-index="6"]  { background-color: var(--chart-color-6);  }
+.chart-legend-dot[data-color-index="7"]  { background-color: var(--chart-color-7);  }
+.chart-legend-dot[data-color-index="8"]  { background-color: var(--chart-color-8);  }
+.chart-legend-dot[data-color-index="9"]  { background-color: var(--chart-color-9);  }
+.chart-legend-dot[data-color-index="10"] { background-color: var(--chart-color-10); }
+.chart-legend-dot[data-color-index="11"] { background-color: var(--chart-color-11); }
+.chart-legend-dot[data-color-index="12"] { background-color: var(--chart-color-12); }
+.chart-legend-dot[data-color-index="13"] { background-color: var(--chart-color-13); }
+.chart-legend-dot[data-color-index="14"] { background-color: var(--chart-color-14); }
+
+/* =============================================================
+   13. MONTHLY SUMMARY SECTION  (Req 6.1–6.5)
+   ============================================================= */
+.month-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.month-card {
+  background-color: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  cursor: pointer;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.month-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.month-card.active {
+  border-color: var(--color-primary);
+  background-color: #eff6ff;   /* blue-50 */
+}
+
+.month-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.month-label {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.month-net {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+.month-net.positive { color: var(--color-balance-pos); }
+.month-net.negative { color: var(--color-balance-neg); }
+
+.month-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.month-stat {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.month-stat .stat-label {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.month-stat .stat-value {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+.month-stat.income  .stat-value { color: var(--color-income);  }
+.month-stat.expense .stat-value { color: var(--color-expense); }
+
+/* Transactions within a selected month */
+.month-transactions {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.month-transactions-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+/* =============================================================
+   14. CATEGORIES SECTION  (Req 5.1–5.6)
+   ============================================================= */
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  min-height: 44px;
+}
+
+.category-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.category-badge {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  background-color: var(--color-surface-alt);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-2);
+  margin-right: var(--space-2);
+}
+
+/* Add-category form */
+.add-category-form {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+}
+
+.add-category-form .form-title {
+  margin-bottom: var(--space-4);
+}
+
+.add-category-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+
+.add-category-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* =============================================================
+   15. WARNING BANNER  (Req 8.3)
+   ============================================================= */
+#ls-warning-banner {
+  background-color: var(--color-danger);
+  color: var(--color-danger-text);
+  padding: var(--space-3) var(--space-4);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+
+/* =============================================================
+   16. UTILITY CLASSES
+   ============================================================= */
+.text-center  { text-align: center; }
+.text-right   { text-align: right;  }
+.text-muted   { color: var(--color-text-muted);  }
+.text-subtle  { color: var(--color-text-subtle); }
+.text-income  { color: var(--color-income);  }
+.text-expense { color: var(--color-expense); }
+.text-primary { color: var(--color-primary); }
+
+.font-bold   { font-weight: 700; }
+.font-medium { font-weight: 500; }
+
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-4 { margin-bottom: var(--space-4); }
+
+.w-full { width: 100%; }
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: var(--space-4) 0;
+}
+
+/* =============================================================
+   TASK 10.2 — RESPONSIVE BREAKPOINTS & DARK / LIGHT THEME
+   Requirements: 7.1, 7.2, 9.1, 9.2
+   ============================================================= */
+
+/* =============================================================
+   17. RESPONSIVE — 768px  (tablet / larger phone landscape)
+   At this breakpoint the bottom nav moves to the top header.
+   ============================================================= */
+@media (min-width: 768px) {
+  /* Body: remove bottom padding for bottom-nav; add top padding for header nav */
+  body {
+    padding-bottom: var(--space-4);
+    padding-top: calc(var(--nav-height-desktop) + var(--space-4));
+  }
+
+  /* App container: expand max-width */
+  .app-container {
+    max-width: 768px;
+  }
+
+  /* ── Nav bar becomes a top header ── */
+  #nav-bar {
+    top: 0;
+    bottom: auto;
+    height: var(--nav-height-desktop);
+    border-top: none;
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 0 var(--space-6);
+    /* Leave room on the right for the theme-toggle button */
+    padding-right: calc(44px + var(--space-8));
+  }
+
+  .nav-tab {
+    flex-direction: row;
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+    min-height: var(--nav-height-desktop);
+    padding: 0 var(--space-4);
+  }
+
+  /* Active indicator shifts to bottom of the header instead of bottom nav */
+  .nav-tab.active::after {
+    width: 100%;
+    height: 3px;
+    bottom: 0;
+    left: 0;
+    border-radius: 0;
+    position: absolute;
+  }
+
+  /* Theme toggle: reposition to top-right aligned with header */
+  #theme-toggle {
+    top: calc((var(--nav-height-desktop) - 44px) / 2);
+    right: var(--space-4);
+  }
+
+  /* Sections: adjust top padding now that nav is at top */
+  #section-dashboard,
+  #section-history,
+  #section-chart,
+  #section-monthly,
+  #section-categories {
+    padding-top: var(--space-6);
+  }
+
+  /* ── Dashboard: summary cards row already 2-col; keep it ── */
+
+  /* ── Form: use a horizontal layout for the type toggle ── */
+  .type-toggle-group {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ── Transaction list: slightly wider padding ── */
+  .transaction-item {
+    padding: var(--space-4) var(--space-5);
+  }
+
+  /* ── Monthly: stats grid can show all 4 columns ── */
+  .month-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* ── Add-category row already horizontal ── */
+
+  /* ── Chart legend: horizontal wrap ── */
+  .chart-legend {
+    gap: var(--space-4);
+  }
+}
+
+/* =============================================================
+   18. RESPONSIVE — 1440px  (wide desktop)
+   ============================================================= */
+@media (min-width: 1440px) {
+  /* Expand container */
+  .app-container {
+    max-width: 960px;
+  }
+
+  /* ── Dashboard: three-column layout ──
+     Column 1: balance card (spans full top row)
+     Row 2: summary cards | add-transaction form  */
+  #section-dashboard .app-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+
+  .balance-card {
+    grid-column: 1 / -1;   /* full width top row */
+  }
+
+  .summary-row {
+    grid-column: 1 / 2;
+    grid-row: 2;
+    flex-direction: column;
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: 0;
+  }
+
+  .summary-row .summary-card {
+    /* already 1fr each, just stack vertically in the left column */
+  }
+
+  .form-card {
+    grid-column: 2 / 3;
+    grid-row: 2;
+    margin-bottom: 0;
+  }
+
+  /* ── History section: widen item ── */
+  .transaction-item {
+    padding: var(--space-5) var(--space-6);
+  }
+
+  /* ── Monthly: side-by-side month list and detail ── */
+  #section-monthly .app-container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+
+  #section-monthly .section-title {
+    grid-column: 1 / -1;
+  }
+
+  .month-list {
+    grid-column: 1 / 2;
+    margin-bottom: 0;
+  }
+
+  #monthly-detail {
+    grid-column: 2 / 3;
+  }
+
+  /* ── Chart: slightly taller bars ── */
+  .chart-bar-track {
+    height: 24px;
+  }
+}
+
+/* =============================================================
+   19. ACCESSIBILITY — touch target guard (Req 9.2)
+   Ensure no breakpoint override reduces interactive elements
+   below 44×44 px.
+   ============================================================= */
+@media (min-width: 768px) {
+  button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  label[for],
+  .nav-tab,
+  .btn,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@media (min-width: 1440px) {
+  button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  input[type="reset"],
+  label[for],
+  .nav-tab,
+  .btn,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* =============================================================
+   20. DARK THEME  (Req 7.1, 7.2)
+   Activated by: document.body.setAttribute('data-theme', 'dark')
+   All semantic tokens are overridden here; component rules that
+   use var(--...) automatically adapt — no per-component overrides.
+   ============================================================= */
+body[data-theme="dark"] {
+  /* ── Surface / background ── */
+  --color-background:   #111827;   /* gray-900 */
+  --color-surface:      #1f2937;   /* gray-800 */
+  --color-surface-alt:  #374151;   /* gray-700 */
+
+  /* ── Text ── */
+  --color-text:         #f9fafb;   /* gray-50  */
+  --color-text-muted:   #d1d5db;   /* gray-300 */
+  --color-text-subtle:  #9ca3af;   /* gray-400 */
+
+  /* ── Borders ── */
+  --color-border:       #374151;   /* gray-700 */
+
+  /* ── Transaction semantic backgrounds ── */
+  --color-income-bg:    #052e16;   /* green-950 */
+  --color-expense-bg:   #450a0a;   /* red-950   */
+
+  /* ── Keep income/expense foreground readable on dark backgrounds ── */
+  --color-income:       #4ade80;   /* green-400 — brighter for dark bg */
+  --color-expense:      #f87171;   /* red-400   — brighter for dark bg */
+
+  /* ── Balance indicator colours (slightly lighter on dark) ── */
+  --color-balance-pos:  #4ade80;   /* green-400 */
+  --color-balance-neg:  #f87171;   /* red-400   */
+
+  /* ── Primary action (keep blue, slightly lighter) ── */
+  --color-primary:        #60a5fa; /* blue-400  */
+  --color-primary-hover:  #3b82f6; /* blue-500  */
+}
+
+/* Dark theme: balance card uses a darker primary surface */
+body[data-theme="dark"] .balance-card {
+  background-color: #1e3a5f;  /* deep dark blue */
+}
+
+/* Dark theme: income summary card border */
+body[data-theme="dark"] .summary-card.income-card {
+  border-color: #14532d;      /* green-900 */
+}
+
+/* Dark theme: expense summary card border */
+body[data-theme="dark"] .summary-card.expense-card {
+  border-color: #7f1d1d;      /* red-900 */
+}
+
+/* Dark theme: form inputs — slightly lighter surface so they stand out */
+body[data-theme="dark"] .form-input,
+body[data-theme="dark"] .form-select,
+body[data-theme="dark"] .form-textarea {
+  background-color: var(--color-surface-alt);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+/* Dark theme: form-select chevron colour update */
+body[data-theme="dark"] .form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239ca3af'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+/* Dark theme: active month card */
+body[data-theme="dark"] .month-card.active {
+  background-color: #1e3a5f;  /* dark blue-950 variant */
+  border-color: var(--color-primary);
+}
+
+/* Dark theme: nav bar shadow direction (bottom when mobile, top when desktop) */
+body[data-theme="dark"] #nav-bar {
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
+}
+
+@media (min-width: 768px) {
+  body[data-theme="dark"] #nav-bar {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Dark theme: scrollbar (webkit) */
+body[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Dark theme: focus ring — keep visible on dark surfaces */
+body[data-theme="dark"] :focus-visible {
+  outline-color: var(--color-primary);
+}

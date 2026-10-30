@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense & Budget Visualizer</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-theme="light">
+  <div class="app-container">
+    <!-- Navigation Bar -->
+    <nav id="nav-bar">
+      <button class="nav-tab active" data-view="dashboard">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </button>
+      <button class="nav-tab" data-view="history">
+        <span class="nav-icon">📝</span>
+        <span>History</span>
+      </button>
+      <button class="nav-tab" data-view="chart">
+        <span class="nav-icon">📈</span>
+        <span>Chart</span>
+      </button>
+      <button class="nav-tab" data-view="monthly">
+        <span class="nav-icon">📅</span>
+        <span>Monthly</span>
+      </button>
+      <button class="nav-tab" data-view="categories">
+        <span class="nav-icon">🏷️</span>
+        <span>Kategori</span>
+      </button>
+    </nav>
+
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <span id="theme-icon">☀️</span>
+    </button>
+
+    <!-- Dashboard Section -->
+    <section id="section-dashboard" class="active">
+      <h1 class="section-title">Dashboard</h1>
+      
+      <!-- Balance Card -->
+      <div class="balance-card">
+        <div class="balance-label">Saldo Bersih</div>
+        <div class="balance-amount balance-positive" id="dashboard-balance">Rp 0</div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="summary-row">
+        <div class="summary-card income-card">
+          <div class="summary-label">Pemasukan</div>
+          <div class="summary-amount" id="summary-income">Rp 0</div>
+        </div>
+        <div class="summary-card expense-card">
+          <div class="summary-label">Pengeluaran</div>
+          <div class="summary-amount" id="summary-expense">Rp 0</div>
+        </div>
+      </div>
+
+      <!-- Add Transaction Form -->
+      <div class="form-card">
+        <h2 class="form-title">Tambah Transaksi</h2>
+        <form id="transaction-form">
+          <div class="form-group">
+            <label class="form-label" for="amount">Jumlah (Rp)</label>
+            <input class="form-input" type="number" id="amount" placeholder="Masukkan jumlah" min="1" required>
+            <div class="form-error" id="amount-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Jenis</label>
+            <div class="type-toggle-group">
+              <label class="type-toggle-label">
+                <input type="radio" name="type" value="income" class="type-toggle-input" checked>
+                <span>Pemasukan</span>
+              </label>
+              <label class="type-toggle-label">
+                <input type="radio" name="type" value="expense" class="type-toggle-input">
+                <span>Pengeluaran</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="category">Kategori</label>
+            <select class="form-select" id="transaction-category" required>
+              <option value="">Pilih kategori</option>
+            </select>
+            <div class="form-error" id="category-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="date">Tanggal</label>
+            <input class="form-input" type="date" id="date" required>
+            <div class="form-error" id="date-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="description">Deskripsi (opsional)</label>
+            <textarea class="form-textarea" id="description" rows="2" placeholder="Opsional: tambahkan keterangan"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- History Section -->
+    <section id="section-history">
+      <div class="section-header">
+        <h1 class="section-title">Riwayat Transaksi</h1>
+      </div>
+      <div class="transaction-list" id="transaction-list-container">
+        <!-- Transaction items will be rendered here -->
+      </div>
+      <div class="empty-state" id="transaction-empty-state" style="display: none;">
+        <div class="empty-icon">📦</div>
+        <div class="empty-text">Belum ada transaksi</div>
+        <div class="empty-subtext">Mulailah dengan menambahkan transaksi pertama Anda</div>
+      </div>
+    </section>
+
+    <!-- Chart Section -->
+    <section id="section-chart">
+      <h1 class="section-title">Pengeluaran per Kategori</h1>
+      <div class="chart-container">
+        <h2 class="chart-title">Distribusi Pengeluaran</h2>
+        <div class="chart-content" id="chart-content">
+          <!-- Chart bars will be rendered here -->
+        </div>
+        <div class="chart-legend" id="chart-legend">
+          <!-- Legend items will be rendered here -->
+        </div>
+        <div class="empty-state" id="chart-empty-state" style="display: none;">
+          <div class="empty-icon">📊</div>
+          <div class="empty-text">Belum ada data pengeluaran</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Monthly Section -->
+    <section id="section-monthly">
+      <h1 class="section-title">Ringkasan Bulanan</h1>
+      <div class="month-list" id="monthly-container">
+        <!-- Month cards will be rendered here -->
+      </div>
+      <div class="empty-state" id="monthly-empty-state" style="display: none;">
+        <div class="empty-icon">📅</div>
+        <div class="empty-text">Belum ada transaksi</div>
+        <div class="empty-subtext">Mulailah dengan menambahkan transaksi pertama Anda</div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="section-categories">
+      <h1 class="section-title">Manajemen Kategori</h1>
+      <div class="category-list" id="category-list-container">
+        <!-- Category items will be rendered here -->
+      </div>
+      <div class="add-category-form">
+        <h2 class="form-title">Tambah Kategori Baru</h2>
+        <form id="category-form">
+          <div class="add-category-row">
+            <div class="form-group" style="flex: 1; margin-bottom: 0;">
+              <label class="form-label" for="new-category">Nama Kategori</label>
+              <input class="form-input" type="text" id="new-category" placeholder="Nama kategori baru" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: auto;">Tambah</button>
+          </div>
+          <div class="form-error" id="category-name-error"></div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
